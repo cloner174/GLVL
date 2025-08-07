@@ -2,7 +2,7 @@ data:
     # name: 'coco'
     dataset: 'ICRA2022' # 'RSSDIVCS' /'Coco'
 
-    labels: /home/lhl/data/data/superpoint-train/logs/magicpoint_synth_homoAdapt_ICRA2022/predictions
+    labels: labels
 #    labels: logs/magicpoint_synth_homoAdapt_coco/predictions
     root: # datasets/COCO
     root_split_txt: # /datasets/COCO

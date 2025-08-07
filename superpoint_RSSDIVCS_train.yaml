@@ -2,7 +2,7 @@ data:
     # name: 'coco'
     dataset: 'RSSDIVCS' # 'RSSDIVCS' /'Coco'
 
-    labels: /home/lhl/data/data/superpoint-train/logs/magicpoint_synth_homoAdapt_RSSDIVCS/predictions
+    labels: labels_RSSDIVCS
 #    labels: logs/magicpoint_synth_homoAdapt_coco/predictions
     root: # datasets/COCO
     root_split_txt: # /datasets/COCO
