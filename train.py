@@ -60,8 +60,8 @@ model = net.GeoLocalizationNet(args)
 model = model.to(args.device)
 
 
-best_model_state_dict = torch.load(join('/home/lhl/data/data/visgeoloca/logs/default/2023-08-10_09-05-21/checkpoints', "superPointNet_85000_checkpoint.pth.tar"))["model_state_dict"]
-model.load_state_dict(best_model_state_dict)
+#best_model_state_dict = torch.load(join('/home/lhl/data/data/visgeoloca/logs/default/2023-08-10_09-05-21/checkpoints', "superPointNet_85000_checkpoint.pth.tar"))["model_state_dict"]
+#model.load_state_dict(best_model_state_dict)
 
 model = torch.nn.DataParallel(model)
 
