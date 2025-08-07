@@ -9,7 +9,7 @@ import collections
 import cv2
 
 
-DATA_PATH = '/home/lhl/data/data/superpoint-train/datasets' # path for datasets
+DATA_PATH = '/content/GLVL/GVL_DATASET' # path for datasets
 DEBUG = False # true: will make synthetic data only uses draw_checkboard and ignore other classes
 
 def dict_update(d, u):
@@ -23,7 +23,7 @@ def dict_update(d, u):
         The updated dictionary.
     """
     for k, v in u.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, collections.abc.Mapping):
             d[k] = dict_update(d.get(k, {}), v)
         else:
             d[k] = v
