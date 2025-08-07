@@ -1047,7 +1047,7 @@ def descriptor_loss(descriptors, descriptors_warped, homographies, mask_valid=No
         shape = torch.tensor([H, W]).type(torch.FloatTensor).to(device)
         # compute the center pixel of every cell in the image
 
-        coor_cells = torch.stack(torch.meshgrid(torch.arange(Hc), torch.arange(Wc)), dim=2)
+        coor_cells = torch.stack(torch.meshgrid(torch.arange(Hc), torch.arange(Wc), indexing='ij'), dim=2)
         coor_cells = coor_cells.type(torch.FloatTensor).to(device)
         coor_cells = coor_cells * cell_size + cell_size // 2
         ## coord_cells is now a grid containing the coordinates of the Hc x Wc
