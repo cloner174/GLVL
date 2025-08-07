@@ -144,9 +144,14 @@ class BaseDataset(data.Dataset):
             self.dataset_folder = join(datasets_folder, dataset_name, split)
             if not os.path.exists(self.dataset_folder):
                 raise FileNotFoundError(f"Folder {self.dataset_folder} does not exist")
-
-            database_folder = join(self.dataset_folder, "reference_images/offset_0_None")
-            queries_folder = join(self.dataset_folder, "query_images")
+            
+            if split == "test":
+                database_folder = join(self.dataset_folder, "database")
+                queries_folder = join(self.dataset_folder, "queries")
+            else:
+                database_folder = join(self.dataset_folder, "reference_images/offset_0_None")
+                queries_folder = join(self.dataset_folder, "query_images")
+            
             if not os.path.exists(database_folder):
                 raise FileNotFoundError(f"Folder {database_folder} does not exist")
             if not os.path.exists(queries_folder):
