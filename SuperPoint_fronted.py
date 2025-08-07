@@ -6,7 +6,7 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
-from util import descriptor_loss_sparse, labels2Dto3D_flattened
+from util import descriptor_loss_sparse, labels2Dto3D_flattened, batch_descriptor_loss_sparse
 
 
 class SuperPoint_fronted:
@@ -85,20 +85,24 @@ class SuperPoint_fronted:
         else:
             self.model.eval()
         
+        # Move all tensors in the sample to the correct device
         for key, tensor in sample.items():
             if isinstance(tensor, torch.Tensor):
                 sample[key] = tensor.to(self.device)
         
+        # Forward pass for the original and warped images
         outputs = self.model(sample['image'], 'SuperPoint')
         warped_outputs = self.model(sample['warped_img'], 'SuperPoint')
         
+        # --- Calculate Detector Loss ---
         detector_loss = self._detector_loss(
             warped_outputs['semi'],
             sample['warped_labels'],
             sample.get('warped_valid_mask')
         )
         
-        descriptor_loss, _, _, _ = descriptor_loss_sparse(
+        # --- Calculate Descriptor Loss using the BATCH-AWARE function ---
+        descriptor_loss, _, pos_loss, neg_loss = batch_descriptor_loss_sparse(
             outputs['desc'],
             warped_outputs['desc'],
             sample['homographies'],
@@ -106,16 +110,21 @@ class SuperPoint_fronted:
             **self.config['model']['sparse_loss']['params']
         )
         
+        # Combine the losses
         total_loss = detector_loss + self.config['model']['sparse_loss']['params']['lamda_d'] * descriptor_loss
         
+        # --- Backpropagation and Optimization ---
         if train:
             total_loss.backward()
             self.optimizer.step()
         
+        # --- Logging to TensorBoard ---
         if n_iter % self.config['tensorboard_interval'] == 0:
             mode = 'train' if train else 'val'
             self.writer.add_scalar(f'SuperPoint/{mode}/detector_loss', detector_loss.item(), n_iter)
             self.writer.add_scalar(f'SuperPoint/{mode}/descriptor_loss', descriptor_loss.item(), n_iter)
+            self.writer.add_scalar(f'SuperPoint/{mode}/positive_descriptor_loss', pos_loss.item(), n_iter)
+            self.writer.add_scalar(f'SuperPoint/{mode}/negative_descriptor_loss', neg_loss.item(), n_iter)
             self.writer.add_scalar(f'SuperPoint/{mode}/total_loss', total_loss.item(), n_iter)
         
         return total_loss.item()

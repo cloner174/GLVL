@@ -616,7 +616,7 @@ def inv_warp_image_batch(img, mat_homo_inv, device='cpu', mode='bilinear'):
         mat_homo_inv = mat_homo_inv.view(1,3,3)
 
     Batch, channel, H, W = img.shape
-    coor_cells = torch.stack(torch.meshgrid(torch.linspace(-1, 1, W), torch.linspace(-1, 1, H)), dim=2)
+    coor_cells = torch.stack(torch.meshgrid(torch.linspace(-1, 1, W), torch.linspace(-1, 1, H), indexing='ij'), dim=2)
     coor_cells = coor_cells.transpose(0, 1)
     coor_cells = coor_cells.to(device)
     coor_cells = coor_cells.contiguous()
@@ -1181,7 +1181,7 @@ def crop_or_pad_choice(in_num_points, out_num_points, shuffle=False):
 
 
 def get_coor_cells(Hc, Wc, cell_size, device='cpu', uv=False):
-    coor_cells = torch.stack(torch.meshgrid(torch.arange(Hc), torch.arange(Wc)), dim=2)
+    coor_cells = torch.stack(torch.meshgrid(torch.arange(Hc), torch.arange(Wc), indexing='ij'), dim=2)
     coor_cells = coor_cells.type(torch.FloatTensor).to(device)
     coor_cells = coor_cells.view(-1, 2)
     # change vu to uv
@@ -1692,7 +1692,8 @@ class SpaceToDepth(nn.Module):
 
 def scale_homography_torch(H, shape, shift=(-1,-1), dtype=torch.float32):
     height, width = shape[0], shape[1]
-    trans = torch.tensor([[2./width, 0., shift[0]], [0., 2./height, shift[1]], [0., 0., 1.]], dtype=dtype)
+    trans = torch.tensor([[2./width, 0., shift[0]], [0., 2./height, shift[1]], [0., 0., 1.]], 
+                         dtype=dtype, device=H.device)
     # print("torch.inverse(trans) ", torch.inverse(trans))
     # print("H: ", H)
     H_tf = torch.inverse(trans) @ H @ trans
