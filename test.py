@@ -27,8 +27,8 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
         all_features = np.empty((len(eval_ds), args.features_dim), dtype="float32")
 
         for inputs, indices in tqdm(database_dataloader, ncols=100):
-            # features = model(inputs.to(args.device), 'retrieval') #jointly
-            features = model(inputs.to(args.device))
+            features = model(inputs.to(args.device), 'retrieval') #jointly
+            #features = model(inputs.to(args.device))
             features = features.cpu().numpy()
             all_features[indices.numpy(), :] = features
         
@@ -39,8 +39,8 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
         queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers,
                                         batch_size=queries_infer_batch_size, pin_memory=(args.device == "cuda"))
         for inputs, indices in tqdm(queries_dataloader, ncols=100):
-            # features = model(inputs.to(args.device), 'retrieval') #jointly
-            features = model(inputs.to(args.device))
+            features = model(inputs.to(args.device), 'retrieval') #jointly
+            #features = model(inputs.to(args.device))
             features = features.cpu().numpy()
             all_features[indices.numpy(), :] = features
     
